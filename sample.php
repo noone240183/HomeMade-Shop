@@ -1,32 +1,14 @@
-<?php
-require_once 'db.php'; // DB接続
-
-// 商品一覧を取得
-$sql = "SELECT * FROM products ORDER BY created_at DESC";
-$stmt = $pdo->query($sql);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-?>
-
 <!DOCTYPE html>
 <html lang="ja">
-
 <head>
   <meta charset="UTF-8">
   <title>Products / 商品一覧</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* --- 省略せず貼ってください（元のCSSと同じ） --- */
-    * {
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
+    * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
 
-    body {
-      background: #fffefb;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+    body { background: #fffefb; margin: 0; padding: 0; color: #333; }
 
     header {
       background: #ffa94d;
@@ -43,9 +25,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       font-weight: bold;
     }
 
-    nav a:hover {
-      color: #333;
-    }
+    nav a:hover { color: #333; }
 
     .product-grid {
       display: grid;
@@ -57,15 +37,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .product-card {
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       overflow: hidden;
       text-align: center;
       transition: transform 0.3s ease;
     }
 
-    .product-card:hover {
-      transform: translateY(-5px);
-    }
+    .product-card:hover { transform: translateY(-5px); }
 
     .product-card img {
       width: 100%;
@@ -75,10 +53,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       transition: transform 0.3s ease;
     }
 
-    .product-card h3 {
-      font-size: 18px;
-      margin: 10px 0 4px;
-    }
+    .product-card h3 { font-size: 18px; margin: 10px 0 4px; }
 
     .product-card p {
       font-size: 14px;
@@ -121,28 +96,56 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
   <header>
     <div class="logo"><strong>HomeMade Shop | 手作りショップ</strong></div>
     <nav>
-      <a href="index.php">Home / ホーム</a>
-      <a href="products.php">Products / 商品</a>
-      <a href="order.php">About Us / 私たちについて</a>
-      <a href="contact.php">Contact / お問い合わせ</a>
+      <a href="index.html">Home / ホーム</a>
+      <a href="products.html">Products / 商品</a>
+      <a href="order.html">About Us / 私たちについて</a>
+      <a href="contact.html">Contact / お問い合わせ</a>
     </nav>
   </header>
 
   <section class="product-grid">
-    <?php foreach ($products as $product): ?>
-      <div class="product-card">
-        <img src="images/uploads/<?= htmlspecialchars($product['image_path']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
-        <h3><?= htmlspecialchars($product['name']) ?></h3>
-        <p><?= htmlspecialchars($product['name_jp']) ?>：<?= number_format($product['price']) ?>円</p>
-        <button class="order-btn" data-price="<?= $product['price'] ?>">注文</button>
-      </div>
-    <?php endforeach; ?>
+    <div class="product-card">
+      <img src="images/candle.png" alt="Candle">
+      <h3>Handmade Candle</h3>
+      <p>円.150 / 柔らかな香り：150円</p>
+      <button class="order-btn" data-price="150">注文</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/doll.png" alt="Doll">
+      <h3>Handmade Doll</h3>
+      <p>円.200 / 抱きしめたくなる：200円</p>
+      <button class="order-btn" data-price="200">注文</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/design.png" alt="Design">
+      <h3>Handmade Design</h3>
+      <p>円.300 / ユニーク：300円</p>
+      <button class="order-btn" data-price="300">注文</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/jam.png" alt="Jam">
+      <h3>Homemade Jam</h3>
+      <p>円.250 / 自然な味：250円</p>
+      <button class="order-btn" data-price="250">注文</button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/picture.jpeg" alt="Picture">
+      <h3>Handmade Picture</h3>
+      <p>円.350 / 美しい作品：350円</p>
+      <button class="order-btn" data-price="350">注文</button>
+    </div>
   </section>
 
+  <!-- 合計金額表示エリア -->
   <div id="total-amount" style="font-size:1.2em; margin:20px 0; text-align:center;">
     合計: 0円
   </div>
 
+  <!-- Zoom Modal -->
   <div class="modal" id="imageModal">
     <img id="modalImage" src="">
   </div>
@@ -180,11 +183,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const image = card.querySelector('img').src;
         const price = parseInt(button.getAttribute('data-price'));
 
-        const item = {
-          name,
-          image,
-          price
-        };
+        const item = { name, image, price };
 
         let orders = JSON.parse(localStorage.getItem('orders')) || [];
         orders.push(item);
@@ -197,5 +196,4 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
   </script>
 
 </body>
-
 </html>
