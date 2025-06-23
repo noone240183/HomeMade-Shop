@@ -19,6 +19,3 @@ document.getElementById('contact-link').onclick = function(e) {
     }
   });
 
-
-  
-

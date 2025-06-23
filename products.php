@@ -6,17 +6,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="style.css">
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
+    * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
 
-    body {
-      background: #fffefb;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+    body { background: #fffefb; margin: 0; padding: 0; color: #333; }
 
     header {
       background: #ffa94d;
@@ -33,9 +25,7 @@
       font-weight: bold;
     }
 
-    nav a:hover {
-      color: #333;
-    }
+    nav a:hover { color: #333; }
 
     .product-grid {
       display: grid;
@@ -53,9 +43,7 @@
       transition: transform 0.3s ease;
     }
 
-    .product-card:hover {
-      transform: translateY(-5px);
-    }
+    .product-card:hover { transform: translateY(-5px); }
 
     .product-card img {
       width: 100%;
@@ -65,10 +53,7 @@
       transition: transform 0.3s ease;
     }
 
-    .product-card h3 {
-      font-size: 18px;
-      margin: 10px 0 4px;
-    }
+    .product-card h3 { font-size: 18px; margin: 10px 0 4px; }
 
     .product-card p {
       font-size: 14px;
@@ -76,7 +61,6 @@
       padding-bottom: 16px;
     }
 
-    /* Zoom Modal */
     .modal {
       display: none;
       position: fixed;
@@ -97,10 +81,6 @@
       box-shadow: 0 0 20px #fff;
     }
 
-    .modal:active {
-      display: none;
-    }
-
     .footer {
       text-align: center;
       background: #ffa94d;
@@ -116,10 +96,10 @@
   <header>
     <div class="logo"><strong>HomeMade Shop | 手作りショップ</strong></div>
     <nav>
-      <a href="index.html">Home / ホーム</a>
-      <a href="products.html">Products / 商品</a>
-      <a href="about us.html">About Us / 私たちについて</a>
-      <a href="contact.html">Contact / お問い合わせ</a>
+      <a href="index.php">Home / ホーム</a>
+      <a href="products.php">Products / 商品</a>
+      <a href="order.php">About Us / 私たちについて</a>
+      <a href="contact.php">Contact / お問い合わせ</a>
     </nav>
   </header>
 
@@ -127,33 +107,43 @@
     <div class="product-card">
       <img src="images/candle.png" alt="Candle">
       <h3>Handmade Candle</h3>
-      <p>Soft scent – 円.150 / 柔らかな香り：150円</p>
+      <p>円.150 / 柔らかな香り：150円</p>
+      <button class="order-btn" data-price="150">注文</button>
     </div>
 
     <div class="product-card">
       <img src="images/doll.png" alt="Doll">
       <h3>Handmade Doll</h3>
-      <p>Soft and cuddly – 円.200 / 抱きしめたくなる：200円</p>
+      <p>円.200 / 抱きしめたくなる：200円</p>
+      <button class="order-btn" data-price="200">注文</button>
     </div>
 
     <div class="product-card">
       <img src="images/design.png" alt="Design">
       <h3>Handmade Design</h3>
-      <p>Unique and artistic – 円.300 / ユニーク：300円</p>
+      <p>円.300 / ユニーク：300円</p>
+      <button class="order-btn" data-price="300">注文</button>
     </div>
 
     <div class="product-card">
       <img src="images/jam.png" alt="Jam">
       <h3>Homemade Jam</h3>
-      <p>Sweet and natural – 円.250 / 自然な味：250円</p>
+      <p>円.250 / 自然な味：250円</p>
+      <button class="order-btn" data-price="250">注文</button>
     </div>
 
     <div class="product-card">
       <img src="images/picture.jpeg" alt="Picture">
       <h3>Handmade Picture</h3>
-      <p>Beautifully crafted – 円.350 / 美しい作品：350円</p>
+      <p>円.350 / 美しい作品：350円</p>
+      <button class="order-btn" data-price="350">注文</button>
     </div>
   </section>
+
+  <!-- 合計金額表示エリア -->
+  <div id="total-amount" style="font-size:1.2em; margin:20px 0; text-align:center;">
+    合計: 0円
+  </div>
 
   <!-- Zoom Modal -->
   <div class="modal" id="imageModal">
@@ -165,7 +155,7 @@
   </footer>
 
   <script>
-    // Image zoom modal
+    // Image Zoom Modal
     const modal = document.getElementById('imageModal');
     const modalImg = document.getElementById('modalImage');
     const productImages = document.querySelectorAll('.product-card img');
@@ -179,6 +169,29 @@
 
     modal.addEventListener('click', () => {
       modal.style.display = 'none';
+    });
+
+    // 注文処理 + localStorage 保存
+    const orderButtons = document.querySelectorAll('.order-btn');
+    const totalAmountDisplay = document.getElementById('total-amount');
+    let totalAmount = 0;
+
+    orderButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const card = button.closest('.product-card');
+        const name = card.querySelector('h3').textContent;
+        const image = card.querySelector('img').src;
+        const price = parseInt(button.getAttribute('data-price'));
+
+        const item = { name, image, price };
+
+        let orders = JSON.parse(localStorage.getItem('orders')) || [];
+        orders.push(item);
+        localStorage.setItem('orders', JSON.stringify(orders));
+
+        totalAmount += price;
+        totalAmountDisplay.textContent = `合計: ${totalAmount}円`;
+      });
     });
   </script>
 

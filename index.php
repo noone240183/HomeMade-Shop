@@ -15,10 +15,10 @@
   <header>
     <div class="logo"><strong>HomeMade Shop | 手作りショップ</strong></div>
     <nav>
-      <a href="index.html">Home / ホーム</a>
-      <a href="products.html">Products / 商品</a>
-      <a href="about us.html">About Us / 私たちについて</a>
-      <a href="contact.html">Contact / お問い合わせ</a>
+      <a href="index.php">Home / ホーム</a>
+      <a href="products.php">Products / 商品</a>
+      <a href="order.php">About Us / 私たちについて</a>
+      <a href="contact.php">Contact / お問い合わせ</a>
     </nav>
   </header>
 
