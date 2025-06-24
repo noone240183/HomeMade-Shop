@@ -1,9 +1,8 @@
 <?php
+require_once 'db.php'; // DB接続
+
 // JSON body पढ्ने
 $data = json_decode(file_get_contents("php://input"), true);
-
-// डेटाबेस कनेक्शन
-$pdo = new PDO('mysql:host=localhost;dbname=homemade_shop;charset=utf8', 'root', '');
 
 // error checking
 if (!$data || !isset($data['orders'])) {

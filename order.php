@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
   <meta charset="UTF-8">
   <title>お会計 / 注文リスト</title>
@@ -28,7 +29,9 @@
       font-weight: bold;
     }
 
-    nav a:hover { color: #333; }
+    nav a:hover {
+      color: #333;
+    }
 
     .container {
       padding: 40px;
@@ -120,6 +123,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <header>
@@ -145,26 +149,26 @@
   <div style="margin-top: 40px;">
     <h3>💳 ご利用可能なお支払い方法</h3>
     <ul style="list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 20px;">
-        <li style="text-align: center;">
-            <img src="images/visa.png" alt="VISA" style="width: 50px;">
-            <div>VISA</div>
-        </li>
-        <li style="text-align: center;">
-            <img src="images/mastercard.png" alt="MasterCard" style="width: 50px;">
-            <div>MasterCard</div>
-        </li>
-        <li style="text-align: center;">
-            <img src="images/paypal.png" alt="PayPal" style="width: 50px;">
-            <div>PayPal</div>
-        </li>
-        <li style="text-align: center;">
-            <img src="images/conbini.png" alt="Konbini" style="width: 50px;">
-            <div>コンビニ</div>
-        </li>
-        <li style="text-align: center;">
-            <img src="images/cash.png" alt="Cash" style="width: 50px;">
-            <div>Cash</div>
-        </li>  
+      <li style="text-align: center;">
+        <img src="images/visa.png" alt="VISA" style="width: 50px;">
+        <div>VISA</div>
+      </li>
+      <li style="text-align: center;">
+        <img src="images/mastercard.png" alt="MasterCard" style="width: 50px;">
+        <div>MasterCard</div>
+      </li>
+      <li style="text-align: center;">
+        <img src="images/paypal.png" alt="PayPal" style="width: 50px;">
+        <div>PayPal</div>
+      </li>
+      <li style="text-align: center;">
+        <img src="images/conbini.png" alt="Konbini" style="width: 50px;">
+        <div>コンビニ</div>
+      </li>
+      <li style="text-align: center;">
+        <img src="images/cash.png" alt="Cash" style="width: 50px;">
+        <div>Cash</div>
+      </li>
     </ul>
   </div>
 
@@ -173,27 +177,27 @@
   </footer>
 
   <script>
-  const orderList = document.getElementById('order-list');
-  const totalAmountDisplay = document.getElementById('total-amount');
+    const orderList = document.getElementById('order-list');
+    const totalAmountDisplay = document.getElementById('total-amount');
 
-  let orders = JSON.parse(localStorage.getItem('orders')) || [];
+    let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
-  function renderOrders() {
-    orderList.innerHTML = '';
-    let total = 0;
+    function renderOrders() {
+      orderList.innerHTML = '';
+      let total = 0;
 
-    if (orders.length === 0) {
-      orderList.innerHTML = "<p>まだ注文はありません。</p>";
-      totalAmountDisplay.textContent = `合計: 0円`;
-      return;
-    }
+      if (orders.length === 0) {
+        orderList.innerHTML = "<p>まだ注文はありません。</p>";
+        totalAmountDisplay.textContent = `合計: 0円`;
+        return;
+      }
 
-    orders.forEach((order, index) => {
-      total += order.price;
+      orders.forEach((order, index) => {
+        total += order.price;
 
-      const item = document.createElement('div');
-      item.className = 'order-item';
-      item.innerHTML = `
+        const item = document.createElement('div');
+        item.className = 'order-item';
+        item.innerHTML = `
         <div class="order-item-left">
           <img src="${order.image}" alt="${order.name}">
           <div class="order-info">
@@ -203,53 +207,56 @@
         </div>
         <button class="remove-btn" onclick="removeOrder(${index})">削除 ✖</button>
       `;
-      orderList.appendChild(item);
+        orderList.appendChild(item);
+      });
+
+      totalAmountDisplay.textContent = `合計: ${total}円`;
+    }
+
+    function removeOrder(index) {
+      orders.splice(index, 1);
+      localStorage.setItem('orders', JSON.stringify(orders));
+      renderOrders();
+    }
+
+    // ✅ 注文確定ボタン処理（サーバーに送信）
+    document.getElementById('checkout-btn').addEventListener('click', () => {
+      if (orders.length === 0) {
+        alert("注文がありません。");
+        return;
+      }
+
+      const confirmOrder = confirm("この内容で注文を確定しますか？");
+
+      if (confirmOrder) {
+        // サーバーへ送信
+        fetch('submit_order.php', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              orders: orders
+            })
+          })
+          .then(response => response.text())
+          .then(result => {
+            alert("ご注文ありがとうございました！🍀");
+            localStorage.removeItem('orders');
+            orders = [];
+            renderOrders();
+          })
+          .catch(error => {
+            alert("サーバーに接続できませんでした。");
+            console.error('Error:', error);
+          });
+      }
     });
 
-    totalAmountDisplay.textContent = `合計: ${total}円`;
-  }
-
-  function removeOrder(index) {
-    orders.splice(index, 1);
-    localStorage.setItem('orders', JSON.stringify(orders));
     renderOrders();
-  }
-
-  // ✅ 注文確定ボタン処理（サーバーに送信）
-  document.getElementById('checkout-btn').addEventListener('click', () => {
-    if (orders.length === 0) {
-      alert("注文がありません。");
-      return;
-    }
-
-    const confirmOrder = confirm("この内容で注文を確定しますか？");
-
-    if (confirmOrder) {
-      // サーバーへ送信
-      fetch('submit_order.php', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ orders: orders })
-      })
-      .then(response => response.text())
-      .then(result => {
-        alert("ご注文ありがとうございました！🍀");
-        localStorage.removeItem('orders');
-        orders = [];
-        renderOrders();
-      })
-      .catch(error => {
-        alert("サーバーに接続できませんでした。");
-        console.error('Error:', error);
-      });
-    }
-  });
-
-  renderOrders();
-</script>
+  </script>
 
 
 </body>
+
 </html>
