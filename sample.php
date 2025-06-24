@@ -98,7 +98,7 @@
     <nav>
       <a href="index.html">Home / ホーム</a>
       <a href="products.html">Products / 商品</a>
-      <a href="order.html">About Us / 私たちについて</a>
+      <a href="order.html">Order / 注文</a>
       <a href="contact.html">Contact / お問い合わせ</a>
     </nav>
   </header>

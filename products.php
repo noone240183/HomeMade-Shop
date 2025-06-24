@@ -123,7 +123,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     <nav>
       <a href="index.php">Home / ホーム</a>
       <a href="products.php">Products / 商品</a>
-      <a href="order.php">About Us / 私たちについて</a>
+      <a href="order.php">Order / 注文</a>
       <a href="contact.php">Contact / お問い合わせ</a>
     </nav>
   </header>

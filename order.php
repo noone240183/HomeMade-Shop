@@ -99,6 +99,25 @@
       padding: 20px;
       font-size: 14px;
     }
+
+    .checkout-section {
+      text-align: center;
+      margin: 40px 0;
+    }
+
+    #checkout-btn {
+      background-color: #ffa94d;
+      color: white;
+      font-size: 18px;
+      padding: 12px 30px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    #checkout-btn:hover {
+      background-color: #ff922b;
+    }
   </style>
 </head>
 <body>
@@ -118,67 +137,119 @@
     <div id="order-list"></div>
     <div class="total" id="total-amount">合計: 0円</div>
   </div>
-  <div style="margin-top: 40px;">
-  <h3>💳 ご利用可能なお支払い方法</h3>
-  <ul style="list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 20px;">
-    <li><img src="images/visa.png" alt="VISA" style="width: 50px;"></li>
-    <li><img src="images/mastercard.png" alt="MasterCard" style="width: 50px;"></li>
-    <li><img src="images/paypal.png" alt="PayPal" style="width: 50px;"></li>
-    <li><img src="images/conbini.png" alt="Konbini" style="width: 50px;"></li>
-    <li><img src="images/cash.png" alt="LINE Pay" style="width: 50px;"></li>  
-  </ul>
+
+  <div class="checkout-section">
+    <button id="checkout-btn">✅ 注文を確定する</button>
   </div>
 
+  <div style="margin-top: 40px;">
+    <h3>💳 ご利用可能なお支払い方法</h3>
+    <ul style="list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 20px;">
+        <li style="text-align: center;">
+            <img src="images/visa.png" alt="VISA" style="width: 50px;">
+            <div>VISA</div>
+        </li>
+        <li style="text-align: center;">
+            <img src="images/mastercard.png" alt="MasterCard" style="width: 50px;">
+            <div>MasterCard</div>
+        </li>
+        <li style="text-align: center;">
+            <img src="images/paypal.png" alt="PayPal" style="width: 50px;">
+            <div>PayPal</div>
+        </li>
+        <li style="text-align: center;">
+            <img src="images/conbini.png" alt="Konbini" style="width: 50px;">
+            <div>コンビニ</div>
+        </li>
+        <li style="text-align: center;">
+            <img src="images/cash.png" alt="Cash" style="width: 50px;">
+            <div>Cash</div>
+        </li>  
+    </ul>
+  </div>
 
   <footer class="footer">
     © 2025 HomeMade Shop | 手作りショップ | Contact: 9800000000
   </footer>
 
   <script>
-    const orderList = document.getElementById('order-list');
-    const totalAmountDisplay = document.getElementById('total-amount');
+  const orderList = document.getElementById('order-list');
+  const totalAmountDisplay = document.getElementById('total-amount');
 
-    let orders = JSON.parse(localStorage.getItem('orders')) || [];
+  let orders = JSON.parse(localStorage.getItem('orders')) || [];
 
-    function renderOrders() {
-      orderList.innerHTML = '';
-      let total = 0;
+  function renderOrders() {
+    orderList.innerHTML = '';
+    let total = 0;
 
-      if (orders.length === 0) {
-        orderList.innerHTML = "<p>まだ注文はありません。</p>";
-        totalAmountDisplay.textContent = `合計: 0円`;
-        return;
-      }
+    if (orders.length === 0) {
+      orderList.innerHTML = "<p>まだ注文はありません。</p>";
+      totalAmountDisplay.textContent = `合計: 0円`;
+      return;
+    }
 
-      orders.forEach((order, index) => {
-        total += order.price;
+    orders.forEach((order, index) => {
+      total += order.price;
 
-        const item = document.createElement('div');
-        item.className = 'order-item';
-        item.innerHTML = `
-          <div class="order-item-left">
-            <img src="${order.image}" alt="${order.name}">
-            <div class="order-info">
-              <h3>${order.name}</h3>
-              <p>価格: ${order.price}円</p>
-            </div>
+      const item = document.createElement('div');
+      item.className = 'order-item';
+      item.innerHTML = `
+        <div class="order-item-left">
+          <img src="${order.image}" alt="${order.name}">
+          <div class="order-info">
+            <h3>${order.name}</h3>
+            <p>価格: ${order.price}円</p>
           </div>
-          <button class="remove-btn" onclick="removeOrder(${index})">削除 ✖</button>
-        `;
-        orderList.appendChild(item);
-      });
+        </div>
+        <button class="remove-btn" onclick="removeOrder(${index})">削除 ✖</button>
+      `;
+      orderList.appendChild(item);
+    });
 
-      totalAmountDisplay.textContent = `合計: ${total}円`;
-    }
+    totalAmountDisplay.textContent = `合計: ${total}円`;
+  }
 
-    function removeOrder(index) {
-      orders.splice(index, 1);
-      localStorage.setItem('orders', JSON.stringify(orders));
-      renderOrders();
-    }
-
+  function removeOrder(index) {
+    orders.splice(index, 1);
+    localStorage.setItem('orders', JSON.stringify(orders));
     renderOrders();
-  </script>
+  }
+
+  // ✅ 注文確定ボタン処理（サーバーに送信）
+  document.getElementById('checkout-btn').addEventListener('click', () => {
+    if (orders.length === 0) {
+      alert("注文がありません。");
+      return;
+    }
+
+    const confirmOrder = confirm("この内容で注文を確定しますか？");
+
+    if (confirmOrder) {
+      // サーバーへ送信
+      fetch('submit_order.php', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ orders: orders })
+      })
+      .then(response => response.text())
+      .then(result => {
+        alert("ご注文ありがとうございました！🍀");
+        localStorage.removeItem('orders');
+        orders = [];
+        renderOrders();
+      })
+      .catch(error => {
+        alert("サーバーに接続できませんでした。");
+        console.error('Error:', error);
+      });
+    }
+  });
+
+  renderOrders();
+</script>
+
 
 </body>
 </html>
