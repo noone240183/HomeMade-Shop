@@ -123,12 +123,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="login-container">
     <h1>ログイン</h1>
-    <form method="post" action="login.php">
+    <form method="post" action="auth.php">
       <input type="text" name="username" placeholder="ユーザー名" required>
       <input type="password" name="password" placeholder="パスワード" required>
       <button type="submit">ログイン</button>
     </form>
-    <a href="register.php">新規登録はこちら</a>
+    <a href="../register/">新規登録はこちら</a>
     <div class="message"><?php echo $message; ?></div>
   </div>
 
