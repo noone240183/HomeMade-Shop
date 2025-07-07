@@ -1,3 +1,16 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+  header("Location: login/");
+  exit;
+}
+
+$pdo = new PDO('mysql:host=localhost;dbname=home_made_shop;charset=utf8', 'root', '');
+$stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
+$stmt->execute([$_SESSION['user_id']]);
+$user = $stmt->fetch(PDO::FETCH_ASSOC);
+?>
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -8,7 +21,6 @@
   <script src="script.js" defer></script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Kaisei+Decol&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
-  
 </head>
 <body>
 
@@ -19,20 +31,21 @@
       <a href="products.php">Products / 商品</a>
       <a href="order.php">Order / 注文</a>
       <a href="contact.php">Contact / お問い合わせ</a>
+      <a href="logout.php" class="logout">Logout / ログアウト</a>
     </nav>
   </header>
 
   <section class="hero">
     <img src="images/hp3.png" alt="Handmade Product" style="width: 250px; height: auto;">
     <div>
-      <h1>Welcome to our Handmade Store<br>手作り商品のお店へようこそ</h1>
-      <p>Natural and local homemade goods, crafted with love.<br>自然で心を込めて作られた家庭の手作り商品をご覧ください。</p>
+      <h1>Welcome, <?php echo htmlspecialchars($user['username']); ?> さん！</h1>
+      <p>Natural and local handmade goods, crafted with love.<br>自然で心を込めて作られた家庭の手作り商品をご覧ください。</p>
     </div>
   </section>
 
   <section class="products">
     <div class="product-track">
-      <!-- 7 images (original + loop) -->
+      <!-- 画像スライドショー -->
       <div class="product-slide"><img src="images/hp1.png" alt="1"></div>
       <div class="product-slide"><img src="images/hp2.png" alt="2"></div>
       <div class="product-slide"><img src="images/hp3.png" alt="3"></div>

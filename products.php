@@ -125,6 +125,7 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       <a href="products.php">Products / 商品</a>
       <a href="order.php">Order / 注文</a>
       <a href="contact.php">Contact / お問い合わせ</a>
+      <a href="logout.php" class="logout">Logout / ログアウト</a>
     </nav>
   </header>
 

@@ -16,3 +16,14 @@ CREATE TABLE orders (
     created_at datetime NOT NULL DEFAULT current_timestamp(),
     updated_at datetime NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 );
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(255) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+INSERT INTO users (username, password, email) VALUES
+('user1', '$2y$10$U1aNqQz1Kjzsf3oZ8xZWz.LZ6qzOY7ihTuj6HjjU1M4UgE1Ir9fNa', 'khantthu718@gmail.com');
+
+
