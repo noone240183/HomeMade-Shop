@@ -1,4 +1,4 @@
-CREATE TABLE products (https://aka.ms/vscode-workspace-trust
+CREATE TABLE products (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     name_jp VARCHAR(100),

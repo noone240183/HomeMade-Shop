@@ -1,9 +1,5 @@
 <?php
-$host = 'localhost';
-$dbname = 'home_made_shop';
-$username = 'root';
-$password = '';
-$message = '';
+require_once '../db.php';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['username'];
@@ -11,9 +7,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $hash = password_hash($pass, PASSWORD_DEFAULT);
 
     try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
-        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
         // 🔍 ユーザー名重複チェック
         $check = $pdo->prepare("SELECT COUNT(*) FROM users WHERE username = ?");
         $check->execute([$user]);
@@ -24,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             // ✅ 新規登録
             $stmt = $pdo->prepare("INSERT INTO users (username, password) VALUES (?, ?)");
             $stmt->execute([$user, $hash]);
-            $message = '✅ 登録が完了しました。<a href="login.php">ログイン</a>';
+            $message = '✅ 登録が完了しました。';
         }
 
     } catch (PDOException $e) {
@@ -121,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <button type="submit">登録</button>
         </form>
         <div class="message"><?php echo htmlspecialchars($message, ENT_QUOTES, 'UTF-8'); ?></div>
-        <a href="login.php">ログイン画面へ戻る</a>
+        <a href="../login/">ログイン画面へ戻る</a>
     </div>
 </body>
 </html>

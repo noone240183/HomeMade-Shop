@@ -1,17 +1,13 @@
 <?php
+require_once '../db.php'; // データベース接続設定を読み込み
+
 session_start();
-$host = 'localhost';
-$dbname = 'home_made_shop';
-$username = 'root';
-$password = '';
-$message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $user = $_POST['username'];
     $pass = $_POST['password'];
 
     try {
-        $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $username, $password);
         $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
         $stmt->execute([$user]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -118,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <input type="password" name="password" placeholder="パスワード" required><br>
             <button type="submit">ログイン</button>
         </form>
-        <a href="register.php">新規登録はこちら</a>
+        <a href="../register/">新規登録はこちら</a>
         <div class="message"><?php echo $message; ?></div>
     </div>
 </body>

@@ -1,10 +1,7 @@
 <?php
-session_start();
+require_once '../db.php'; // データベース接続設定を読み込み
 
-$host = 'localhost';
-$dbname = 'home_made_shop';
-$db_user = 'root';
-$db_pass = '';
+session_start();
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     header('Location: login/');
@@ -20,7 +17,6 @@ if (empty($username) || empty($password)) {
 }
 
 try {
-    $pdo = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8", $db_user, $db_pass);
     $stmt = $pdo->prepare("SELECT * FROM users WHERE username = ?");
     $stmt->execute([$username]);
     $user = $stmt->fetch(PDO::FETCH_ASSOC);

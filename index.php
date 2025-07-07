@@ -1,4 +1,6 @@
 <?php
+require_once 'db.php'; // データベース接続設定を読み込み
+
 session_start();
 
 if (!isset($_SESSION['user_id'])) {
@@ -6,7 +8,6 @@ if (!isset($_SESSION['user_id'])) {
   exit;
 }
 
-$pdo = new PDO('mysql:host=localhost;dbname=home_made_shop;charset=utf8', 'root', '');
 $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
 $stmt->execute([$_SESSION['user_id']]);
 $user = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -1,6 +1,7 @@
 <?php
+require_once 'db.php'; // データベース接続設定を読み込み
+
 session_start();
-$pdo = new PDO('mysql:host=localhost;dbname=homemade_shop;charset=utf8', 'root', '');
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
   $name = $_POST['name'];
