@@ -1,10 +1,64 @@
+<?php
+// --- Language switch block START ---
+session_start();
+if (isset($_GET['lang'])) {
+  $_SESSION['lang'] = $_GET['lang'];
+}
+$lang = $_SESSION['lang'] ?? 'ja';
+
+$labels = [
+  'en' => [
+    'home' => 'Home',
+    'products' => 'Products',
+    'order' => 'Order',
+    'contact' => 'Contact',
+    'logout' => 'Logout',
+    'history' => 'Order History',
+    'order_list' => '🧾 Order List',
+    'view_orders' => '🛒 View Order List',
+    'total' => 'Total',
+    'no_orders' => 'No orders yet.',
+    'confirm_order' => 'Confirm this order?',
+    'checkout' => '✅ Confirm Order',
+    'thanks' => 'Thank you for your order! 🍀',
+    'fail_save' => 'Failed to save order: ',
+    'no_order_alert' => 'No orders.',
+    'payment_methods' => '💳 Available Payment Methods',
+    'cash' => 'Cash',
+    'conbini' => 'Konbini',
+    'price' => 'Price'
+  ],
+  'ja' => [
+    'home' => 'ホーム',
+    'products' => '商品',
+    'order' => '注文',
+    'contact' => 'お問い合わせ',
+    'logout' => 'ログアウト',
+    'history' => '注文履歴',
+    'order_list' => '🧾 ご注文リスト',
+    'view_orders' => '🛒 注文リストを見る',
+    'total' => '合計',
+    'no_orders' => 'まだ注文はありません。',
+    'confirm_order' => 'この内容で注文を確定しますか？',
+    'checkout' => '✅ 注文を確定する',
+    'thanks' => 'ご注文ありがとうございました！🍀',
+    'fail_save' => '注文の保存に失敗しました: ',
+    'no_order_alert' => '注文がありません。',
+    'payment_methods' => '💳 ご利用可能なお支払い方法',
+    'cash' => '現金',
+    'conbini' => 'コンビニ',
+    'price' => '価格'
+  ]
+];
+// --- Language switch block END ---
+?>
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="<?php echo $lang; ?>">
 
 <head>
-  <meta charset="UTF-8">
-  <title>お会計 / 注文リスト</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <title><?php echo $labels[$lang]['order_list']; ?></title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
     body {
       font-family: 'Arial', sans-serif;
@@ -22,11 +76,31 @@
       align-items: center;
     }
 
+    .logo {
+      font-size: 1.3em;
+      color: #fff;
+    }
+
+    .lang-btn {
+      margin-right: 8px;
+      color: #fff;
+      background: #339af0;
+      padding: 4px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .lang-btn:hover {
+      background: #1971c2;
+    }
+
     nav a {
       margin-left: 20px;
       text-decoration: none;
       color: white;
       font-weight: bold;
+      transition: color 0.2s;
     }
 
     nav a:hover {
@@ -128,47 +202,61 @@
 
   <header>
     <div class="logo"><strong>HomeMade Shop | 手作りショップ</strong></div>
+    <!-- Language Switch Option -->
+    <div style="margin-bottom:10px;">
+      <a href="?lang=en" class="lang-btn"<?php if($lang=='en') echo ' style="font-weight:bold;"'; ?>>English</a> |
+      <a href="?lang=ja" class="lang-btn"<?php if($lang=='ja') echo ' style="font-weight:bold;"'; ?>>日本語</a>
+    </div>
     <nav>
-      <a href="index.php">Home / ホーム</a>
-      <a href="products.php">Products / 商品</a>
-      <a href="order.php">Order / 注文</a>
-      <a href="contact.php">Contact / お問い合わせ</a>
-      <a href="logout.php" class="logout">Logout / ログアウト</a>
+      <a href="index.php"><?php echo $labels[$lang]['home']; ?></a>
+      <a href="products.php"><?php echo $labels[$lang]['products']; ?></a>
+      <a href="order.php"><?php echo $labels[$lang]['order']; ?></a>
+      <a href="contact.php"><?php echo $labels[$lang]['contact']; ?></a>
+      <a href="history.php"><?php echo $labels[$lang]['history']; ?></a>
+      <a href="logout.php" class="logout"><?php echo $labels[$lang]['logout']; ?></a>
     </nav>
   </header>
 
   <div class="container">
-    <h2>🧾 ご注文リスト</h2>
+    <h2><?php echo $labels[$lang]['order_list']; ?></h2>
+
+    <!-- 注文リスト表示ボタン -->
+    <div style="text-align: center; margin-bottom: 20px;">
+      <button onclick="renderOrders()" style="padding: 10px 20px; background: #339af0; color: white; border: none; border-radius: 8px; cursor: pointer;">
+        <?php echo $labels[$lang]['view_orders']; ?>
+      </button>
+    </div>
+
     <div id="order-list"></div>
-    <div class="total" id="total-amount">合計: 0円</div>
+    <div class="total" id="total-amount"><?php echo $labels[$lang]['total']; ?>: 0円</div>
   </div>
 
   <div class="checkout-section">
-    <button id="checkout-btn">✅ 注文を確定する</button>
+    <button id="checkout-btn"><?php echo $labels[$lang]['checkout']; ?></button>
   </div>
 
   <div style="margin-top: 40px;">
-    <h3>💳 ご利用可能なお支払い方法</h3>
+    <h3><?php echo $labels[$lang]['payment_methods']; ?></h3>
     <ul style="list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 20px;">
       <li style="text-align: center;">
-        <img src="images/visa.png" alt="VISA" style="width: 50px;">
+        <img src="images/visa.png" alt="VISA" style="width: 50px;" />
         <div>VISA</div>
       </li>
       <li style="text-align: center;">
-        <img src="images/mastercard.png" alt="MasterCard" style="width: 50px;">
+        <img src="images/mastercard.png" alt="MasterCard" style="width: 50px;" />
         <div>MasterCard</div>
       </li>
       <li style="text-align: center;">
-        <img src="images/paypal.png" alt="PayPal" style="width: 50px;">
+        <img src="images/paypal.png" alt="PayPal" style="width: 50px;" />
         <div>PayPal</div>
       </li>
       <li style="text-align: center;">
-        <img src="images/conbini.png" alt="Konbini" style="width: 50px;">
-        <div>コンビニ</div>
+        <img src="images/conbini.png" alt="Konbini" style="width: 50px;" />
+        <div><?php echo $labels[$lang]['conbini']; ?></div>
       </li>
       <li style="text-align: center;">
-        <img src="images/cash.png" alt="Cash" style="width: 50px;">
-        <div>Cash</div>
+        <img src="images/cash.png" alt="Cash" style="width: 50px;" />
+        <div><?php echo $labels[$lang]['cash']; ?></div>
       </li>
     </ul>
   </div>
@@ -180,16 +268,27 @@
   <script>
     const orderList = document.getElementById('order-list');
     const totalAmountDisplay = document.getElementById('total-amount');
-
     let orders = JSON.parse(localStorage.getItem('orders')) || [];
+
+    // Language labels for JS
+    const jsLabels = {
+      no_orders: <?php echo json_encode($labels[$lang]['no_orders']); ?>,
+      total: <?php echo json_encode($labels[$lang]['total']); ?>,
+      price: <?php echo json_encode($labels[$lang]['price']); ?>,
+      remove: "削除 ✖",
+      confirm_order: <?php echo json_encode($labels[$lang]['confirm_order']); ?>,
+      thanks: <?php echo json_encode($labels[$lang]['thanks']); ?>,
+      fail_save: <?php echo json_encode($labels[$lang]['fail_save']); ?>,
+      no_order_alert: <?php echo json_encode($labels[$lang]['no_order_alert']); ?>
+    };
 
     function renderOrders() {
       orderList.innerHTML = '';
       let total = 0;
 
       if (orders.length === 0) {
-        orderList.innerHTML = "<p>まだ注文はありません。</p>";
-        totalAmountDisplay.textContent = `合計: 0円`;
+        orderList.innerHTML = `<p>${jsLabels.no_orders}</p>`;
+        totalAmountDisplay.textContent = `${jsLabels.total}: 0円`;
         return;
       }
 
@@ -199,19 +298,19 @@
         const item = document.createElement('div');
         item.className = 'order-item';
         item.innerHTML = `
-        <div class="order-item-left">
-          <img src="${order.image}" alt="${order.name}">
-          <div class="order-info">
-            <h3>${order.name}</h3>
-            <p>価格: ${order.price}円</p>
+          <div class="order-item-left">
+            <img src="${order.image}" alt="${order.name}">
+            <div class="order-info">
+              <h3>${order.name}</h3>
+              <p>${jsLabels.price}: ${order.price}円</p>
+            </div>
           </div>
-        </div>
-        <button class="remove-btn" onclick="removeOrder(${index})">削除 ✖</button>
-      `;
+          <button class="remove-btn" onclick="removeOrder(${index})">${jsLabels.remove}</button>
+        `;
         orderList.appendChild(item);
       });
 
-      totalAmountDisplay.textContent = `合計: ${total}円`;
+      totalAmountDisplay.textContent = `${jsLabels.total}: ${total}円`;
     }
 
     function removeOrder(index) {
@@ -220,32 +319,32 @@
       renderOrders();
     }
 
-    // ✅ 注文確定ボタン処理（サーバーに送信）
     document.getElementById('checkout-btn').addEventListener('click', () => {
       if (orders.length === 0) {
-        alert("注文がありません。");
+        alert(jsLabels.no_order_alert);
         return;
       }
 
-      const confirmOrder = confirm("この内容で注文を確定しますか？");
+      const confirmOrder = confirm(jsLabels.confirm_order);
 
       if (confirmOrder) {
-        // サーバーへ送信
         fetch('submit_order.php', {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json'
             },
-            body: JSON.stringify({
-              orders: orders
-            })
+            body: JSON.stringify({ orders: orders })
           })
-          .then(response => response.text())
+          .then(response => response.json())
           .then(result => {
-            alert("ご注文ありがとうございました！🍀");
-            localStorage.removeItem('orders');
-            orders = [];
-            renderOrders();
+            if(result.status === 'success') {
+              alert(jsLabels.thanks);
+              localStorage.removeItem('orders');
+              orders = [];
+              renderOrders();
+            } else {
+              alert(jsLabels.fail_save + result.message);
+            }
           })
           .catch(error => {
             alert("サーバーに接続できませんでした。");
@@ -253,11 +352,5 @@
           });
       }
     });
-
-    renderOrders();
   </script>
-
-
 </body>
-
-</html>

@@ -1,32 +1,66 @@
 <?php
-require_once 'db.php'; // DB接続
+// --- Language switch block START ---
+session_start();
+if (isset($_GET['lang'])) {
+  $_SESSION['lang'] = $_GET['lang'];
+}
+$lang = $_SESSION['lang'] ?? 'ja';
 
-// 商品一覧を取得
-$sql = "SELECT * FROM products ORDER BY created_at DESC";
-$stmt = $pdo->query($sql);
-$products = $stmt->fetchAll(PDO::FETCH_ASSOC);
+$labels = [
+  'en' => [
+    'home' => 'Home',
+    'products' => 'Products',
+    'order' => 'Order',
+    'contact' => 'Contact',
+    'logout' => 'Logout',
+    'price' => 'Price',
+    'order_btn' => 'Order',
+    'total' => 'Total',
+    'candle' => 'Handmade Candle',
+    'doll' => 'Handmade Doll',
+    'design' => 'Handmade Design',
+    'jam' => 'Homemade Jam',
+    'picture' => 'Handmade Picture',
+    'desc_candle' => 'Soft scent: 150 yen',
+    'desc_doll' => 'Huggable: 200 yen',
+    'desc_design' => 'Unique: 300 yen',
+    'desc_jam' => 'Natural taste: 250 yen',
+    'desc_picture' => 'Beautiful work: 350 yen'
+  ],
+  'ja' => [
+    'home' => 'ホーム',
+    'products' => '商品',
+    'order' => '注文',
+    'contact' => 'お問い合わせ',
+    'logout' => 'ログアウト',
+    'price' => '価格',
+    'order_btn' => '注文',
+    'total' => '合計',
+    'candle' => 'Handmade Candle',
+    'doll' => 'Handmade Doll',
+    'design' => 'Handmade Design',
+    'jam' => 'Homemade Jam',
+    'picture' => 'Handmade Picture',
+    'desc_candle' => '柔らかな香り：150円',
+    'desc_doll' => '抱きしめたくなる：200円',
+    'desc_design' => 'ユニーク：300円',
+    'desc_jam' => '自然な味：250円',
+    'desc_picture' => '美しい作品：350円'
+  ]
+];
+// --- Language switch block END ---
 ?>
-
 <!DOCTYPE html>
-<html lang="ja">
-
+<html lang="<?php echo $lang; ?>">
 <head>
   <meta charset="UTF-8">
-  <title>Products / 商品一覧</title>
+  <title><?php echo $labels[$lang]['products']; ?> / 商品一覧</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style.css">
   <style>
-    /* --- 省略せず貼ってください（元のCSSと同じ） --- */
-    * {
-      box-sizing: border-box;
-      font-family: 'Arial', sans-serif;
-    }
+    * { box-sizing: border-box; font-family: 'Arial', sans-serif; }
 
-    body {
-      background: #fffefb;
-      margin: 0;
-      padding: 0;
-      color: #333;
-    }
+    body { background: #fffefb; margin: 0; padding: 0; color: #333; }
 
     header {
       background: #ffa94d;
@@ -36,16 +70,31 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       align-items: center;
     }
 
+    .logo { font-size: 1.3em; color: #fff; }
+
+    .lang-btn {
+      margin-right: 8px;
+      color: #fff;
+      background: #339af0;
+      padding: 4px 12px;
+      border-radius: 5px;
+      text-decoration: none;
+      font-weight: bold;
+      transition: background 0.2s;
+    }
+    .lang-btn:hover {
+      background: #1971c2;
+    }
+
     nav a {
       margin-left: 20px;
       text-decoration: none;
       color: white;
       font-weight: bold;
+      transition: color 0.2s;
     }
 
-    nav a:hover {
-      color: #333;
-    }
+    nav a:hover { color: #333; }
 
     .product-grid {
       display: grid;
@@ -57,15 +106,13 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
     .product-card {
       background: #fff;
       border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       overflow: hidden;
       text-align: center;
       transition: transform 0.3s ease;
     }
 
-    .product-card:hover {
-      transform: translateY(-5px);
-    }
+    .product-card:hover { transform: translateY(-5px); }
 
     .product-card img {
       width: 100%;
@@ -75,15 +122,28 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
       transition: transform 0.3s ease;
     }
 
-    .product-card h3 {
-      font-size: 18px;
-      margin: 10px 0 4px;
-    }
+    .product-card h3 { font-size: 18px; margin: 10px 0 4px; }
 
     .product-card p {
       font-size: 14px;
       color: #555;
       padding-bottom: 16px;
+    }
+
+    .order-btn {
+      background: #ffa94d;
+      color: #fff;
+      border: none;
+      padding: 8px 22px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-bottom: 16px;
+      transition: background 0.2s;
+    }
+    .order-btn:hover {
+      background: #ff922b;
     }
 
     .modal {
@@ -120,30 +180,63 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
   <header>
     <div class="logo"><strong>HomeMade Shop | 手作りショップ</strong></div>
+    <!-- Language Switch Option -->
+    <div style="margin-bottom:10px;">
+      <a href="?lang=en" class="lang-btn"<?php if($lang=='en') echo ' style="font-weight:bold;"'; ?>>English</a> |
+      <a href="?lang=ja" class="lang-btn"<?php if($lang=='ja') echo ' style="font-weight:bold;"'; ?>>日本語</a>
+    </div>
     <nav>
-      <a href="index.php">Home / ホーム</a>
-      <a href="products.php">Products / 商品</a>
-      <a href="order.php">Order / 注文</a>
-      <a href="contact.php">Contact / お問い合わせ</a>
-      <a href="logout.php" class="logout">Logout / ログアウト</a>
+      <a href="index.php"><?php echo $labels[$lang]['home']; ?></a>
+      <a href="products.php"><?php echo $labels[$lang]['products']; ?></a>
+      <a href="order.php"><?php echo $labels[$lang]['order']; ?></a>
+      <a href="contact.php"><?php echo $labels[$lang]['contact']; ?></a>
+      <a href="logout.php" class="logout"><?php echo $labels[$lang]['logout']; ?></a>
     </nav>
   </header>
 
   <section class="product-grid">
-    <?php foreach ($products as $product): ?>
-      <div class="product-card">
-        <img src="images/uploads/<?= htmlspecialchars($product['image_path']) ?>" alt="<?= htmlspecialchars($product['name']) ?>">
-        <h3><?= htmlspecialchars($product['name']) ?></h3>
-        <p><?= htmlspecialchars($product['name_jp']) ?>：<?= number_format($product['price']) ?>円</p>
-        <button class="order-btn" data-price="<?= $product['price'] ?>">注文</button>
-      </div>
-    <?php endforeach; ?>
+    <div class="product-card">
+      <img src="images/candle.png" alt="Candle">
+      <h3><?php echo $labels[$lang]['candle']; ?></h3>
+      <p><?php echo $labels[$lang]['desc_candle']; ?></p>
+      <button class="order-btn" data-price="150"><?php echo $labels[$lang]['order_btn']; ?></button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/doll.png" alt="Doll">
+      <h3><?php echo $labels[$lang]['doll']; ?></h3>
+      <p><?php echo $labels[$lang]['desc_doll']; ?></p>
+      <button class="order-btn" data-price="200"><?php echo $labels[$lang]['order_btn']; ?></button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/design.png" alt="Design">
+      <h3><?php echo $labels[$lang]['design']; ?></h3>
+      <p><?php echo $labels[$lang]['desc_design']; ?></p>
+      <button class="order-btn" data-price="300"><?php echo $labels[$lang]['order_btn']; ?></button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/jam.png" alt="Jam">
+      <h3><?php echo $labels[$lang]['jam']; ?></h3>
+      <p><?php echo $labels[$lang]['desc_jam']; ?></p>
+      <button class="order-btn" data-price="250"><?php echo $labels[$lang]['order_btn']; ?></button>
+    </div>
+
+    <div class="product-card">
+      <img src="images/picture.jpeg" alt="Picture">
+      <h3><?php echo $labels[$lang]['picture']; ?></h3>
+      <p><?php echo $labels[$lang]['desc_picture']; ?></p>
+      <button class="order-btn" data-price="350"><?php echo $labels[$lang]['order_btn']; ?></button>
+    </div>
   </section>
 
+  <!-- 合計金額表示エリア -->
   <div id="total-amount" style="font-size:1.2em; margin:20px 0; text-align:center;">
-    合計: 0円
+    <?php echo $labels[$lang]['total']; ?>: 0円
   </div>
 
+  <!-- Zoom Modal -->
   <div class="modal" id="imageModal">
     <img id="modalImage" src="">
   </div>
@@ -181,22 +274,17 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
         const image = card.querySelector('img').src;
         const price = parseInt(button.getAttribute('data-price'));
 
-        const item = {
-          name,
-          image,
-          price
-        };
+        const item = { name, image, price };
 
         let orders = JSON.parse(localStorage.getItem('orders')) || [];
         orders.push(item);
         localStorage.setItem('orders', JSON.stringify(orders));
 
         totalAmount += price;
-        totalAmountDisplay.textContent = `合計: ${totalAmount}円`;
+        totalAmountDisplay.textContent = "<?php echo $labels[$lang]['total']; ?>: " + totalAmount + "円";
       });
     });
   </script>
 
 </body>
-
 </html>
